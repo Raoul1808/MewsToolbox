@@ -12,6 +12,8 @@ namespace MewsToolbox
         private string FilePath;
         public IFormatProvider Culture;
 
+        public int SectionCount => iniContent.Count;
+
         /// <summary>
         /// Creates a new Ini file handler for the file at the given path. /!\ THE FILE MUST EXIST FIRST. IT WILL NOT BE CREATED AUTOMATICALLY IF MISSING
         /// </summary>
@@ -41,7 +43,7 @@ namespace MewsToolbox
 
             foreach (string line in content)
             {
-                if (line.StartsWith(";") || string.IsNullOrWhiteSpace(line)) continue; // This is either a comment or an empty line, we don't count it.
+                if (line.StartsWith(";") || line.StartsWith('#') || string.IsNullOrWhiteSpace(line)) continue; // This is either a comment or an empty line, we don't count it.
                 else if (line.StartsWith("[") && line.EndsWith("]")) // This is a section, we want to create a new sub dictionary
                 {
                     string sectionName = line.Substring(1, line.Length - 2);
@@ -159,6 +161,7 @@ namespace MewsToolbox
                 iniContent.Add(section, new Dictionary<string, string>());
             if (!iniContent[section].ContainsKey(setting))
                 iniContent[section].Add(setting, value.ToString());
+            else iniContent[section][setting] = value.ToString();
             if (immediatelySave) SaveFile();
         }
 
